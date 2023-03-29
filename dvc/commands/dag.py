@@ -44,14 +44,14 @@ def _show_dot(graph: "DiGraph"):
     return dot_file.getvalue()
 
 
-def _show_mermaid(graph, markdown: bool = False):
+def _show_mermaid(graph, markdown: bool = False, direction: str = "TD"):
     import networkx as nx
 
     from dvc.repo.graph import get_pipelines
 
     pipelines = get_pipelines(graph)
 
-    graph = "flowchart TD"
+    graph = f"flowchart {direction}"
 
     for pipeline in pipelines:
         pipeline = nx.convert_node_labels_to_integers(
@@ -145,7 +145,7 @@ class CmdDAG(CmdBase):
         if self.args.dot:
             ui.write(_show_dot(graph))
         elif self.args.mermaid or self.args.markdown:
-            ui.write(_show_mermaid(graph, self.args.markdown))
+            ui.write(_show_mermaid(graph, self.args.markdown, self.args.direction))
         else:
             with ui.pager():
                 ui.write(_show_ascii(graph))
@@ -197,6 +197,15 @@ def add_parser(subparsers, parent_parser):
         action="store_true",
         default=False,
         help="Print output files instead of stages.",
+    )
+    dag_parser.add_argument(
+        "--direction",
+        choices=["LR", "TD"],
+        default="TD",
+        help=(
+            "Direction of the rendered mermaid DAG. "
+            "Can either be 'LR' for left-to-right or 'TD' for top-down'."
+        ),
     )
     dag_parser.add_argument(
         "target",
