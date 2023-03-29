@@ -45,24 +45,24 @@ def _show_dot(graph: "DiGraph"):
 
 
 def _show_mermaid(graph, markdown: bool = False):
+    import networkx as nx
+
     from dvc.repo.graph import get_pipelines
 
     pipelines = get_pipelines(graph)
 
     graph = "flowchart TD"
 
-    total_nodes = 0
     for pipeline in pipelines:
-        node_ids = {}
-        nodes = sorted(str(x) for x in pipeline.nodes)
-        for node in nodes:
-            total_nodes += 1
-            node_id = f"node{total_nodes}"
-            graph += f'\n\t{node_id}["{node}"]'
-            node_ids[node] = node_id
-        edges = sorted((str(a), str(b)) for b, a in pipeline.edges)
-        for a, b in edges:
-            graph += f"\n\t{node_ids[str(a)]}-->{node_ids[str(b)]}"
+        pipeline = nx.convert_node_labels_to_integers(
+            pipeline, 0, label_attribute="stage name"
+        )
+
+        for node, data in pipeline.nodes(data=True):
+            graph += f"\n\tnode{node}[\"{data['stage_name']}\"]"
+
+        for edge in pipeline.edges:
+            graph += f"\n\tnode{edge[1]} --> node{edge[0]}"
 
     if markdown:
         return f"```mermaid\n{graph}\n```"
