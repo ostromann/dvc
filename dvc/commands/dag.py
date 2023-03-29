@@ -59,7 +59,7 @@ def _show_mermaid(graph, markdown: bool = False, direction: str = "TD"):
         )
 
         for node, data in pipeline.nodes(data=True):
-            graph += f"\n\tnode{node}[\"{data['stage_name']}\"]"
+            graph += f"\n\tnode{node}[\"{data['stage name']}\"]"
 
         for edge in pipeline.edges:
             graph += f"\n\tnode{edge[1]} --> node{edge[0]}"
