@@ -61,10 +61,6 @@ def _show_mermaid(graph, markdown: bool = False, status: bool = False):
 
     pipelines = get_pipelines(graph)
 
-    if status:
-        pass
-        # Update the node status
-
     graph = "flowchart TD"
 
     if status:
@@ -374,7 +370,7 @@ class CmdDAG(CmdBase):
         )
 
         if self.args.status:
-            graph = _update_stage_status(self.repo, graph, self.args.status_import)
+            graph = _update_stage_status(self.repo, self.args.target, graph, self.args.status_import)
 
         if self.args.dot:
             ui.write(_show_dot(graph))
